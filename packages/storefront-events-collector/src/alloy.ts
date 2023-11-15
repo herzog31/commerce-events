@@ -90,18 +90,6 @@ const sendEvent = async (schema: BeaconSchema): Promise<AlloySendEventResponse |
 };
 
 /**
- * checks to make sure aep in the eventForwarding context is set to true and
- * that there is at least a datastreamId
- */
-const hasConfig = (): boolean => {
-    const { context } = window.magentoStorefrontEvents;
-    const eventForwarding = context.getEventForwarding();
-    const config = context.getAEP();
-
-    return !!eventForwarding?.aep && !!config.datastreamId && !!config.imsOrgId;
-};
-
-/**
  * checks to see if the mg_dnt cookie is set and will set the consent
  * on the alloy instance
  */
@@ -122,4 +110,4 @@ const setConsent = async (): Promise<void> => {
 };
 
 /** preconfigured alloy instance that allows us to send an event */
-export { configure, hasConfig, setExistingAlloy, sendEvent, setConsent };
+export { configure, setExistingAlloy, sendEvent, setConsent };

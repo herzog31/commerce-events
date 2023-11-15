@@ -3,8 +3,7 @@ import { AEP } from "@adobe/magento-storefront-events-sdk/dist/types/types/schem
 import { AEPContext } from "../types/contexts";
 
 const createContext = (aep?: AEP): AEPContext => {
-    const mse = window.magentoStorefrontEvents;
-    const aepCtx = aep ?? mse.context.getAEP();
+    const aepCtx = aep ?? window.adobeDataLayer.getState("aepContext");
 
     if (!aepCtx) {
         return {};

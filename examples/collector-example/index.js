@@ -16,33 +16,68 @@ import {
     mockStorefront,
 } from "../../packages/storefront-events-collector/tests/utils/mocks";
 
-const mse = window.magentoStorefrontEvents;
-
-mse.context.setAccount(mockAccount);
-mse.context.setMagentoExtension(mockExtension);
-mse.context.setDataServicesExtension(mockDataServicesExtension);
-mse.context.setExperiencePlatformConnectorExtension(mockExperiencePlatformConnectorExtenion);
-mse.context.setRecommendationsExtension(mockRecommendationsExtension);
-mse.context.setSearchExtension(mockSearchExtension);
-mse.context.setOrder(mockOrder);
-mse.context.setPage(mockPage);
-mse.context.setProduct(mockProduct);
-mse.context.setRecommendations(mockRecommendations);
-mse.context.setSearchInput(mockSearchInput);
-mse.context.setSearchResults(mockSearchResults);
-mse.context.setShopper(mockShopper);
-mse.context.setShoppingCart(mockShoppingCart);
-mse.context.setStorefrontInstance(mockStorefront);
+window.adobeDataLayer.push(
+    {
+        accountContext: mockAccount,
+    },
+    {
+        magentoExtensionContext: mockExtension,
+    },
+    {
+        dataServicesExtensionContext: mockDataServicesExtension,
+    },
+    {
+        experiencePlatformConnectorExtensionContext: mockExperiencePlatformConnectorExtenion,
+    },
+    {
+        recommendationsExtensionContext: mockRecommendationsExtension,
+    },
+    {
+        searchExtensionContext: mockSearchExtension,
+    },
+    {
+        orderContext: mockOrder,
+    },
+    {
+        pageContext: mockPage,
+    },
+    {
+        productContext: mockProduct,
+    },
+    {
+        recommendationsContext: mockRecommendations,
+    },
+    {
+        searchInputContext: mockSearchInput,
+    },
+    {
+        searchResultsContext: mockSearchResults,
+    },
+    {
+        shopperContext: mockShopper,
+    },
+    {
+        shoppingCartContext: mockShoppingCart,
+    },
+    {
+        storefrontInstanceContext: mockStorefront,
+    },
+);
 
 /* beacon/experience platform specific code below*/
-mse.context.setAEP({
-    imsOrgId: "DEDB2A52641B1D460A495F8E@AdobeOrg",
-    datastreamId: '869fcdfe-abda-4bd5-b948-d9c1595c42e9', // ani commerce
-});
-
-mse.context.setEventForwarding({
-    commerce: true,
-    aep: true,
-});
+console.debug("try to push to it");
+window.adobeDataLayer.push(
+    {
+        aepContext: {
+            imsOrgId: "DEDB2A52641B1D460A495F8E@AdobeOrg",
+            datastreamId: "869fcdfe-abda-4bd5-b948-d9c1595c42e9", // ani commerce
+        },
+    },
+    {
+        eventForwardingContext: {
+            commerce: true,
+            aep: true,
+        },
+    },
+);
 /* end beacon */
-

@@ -8,9 +8,9 @@ import { createCommerceScope } from "../../utils/aep/commerceScope";
 const XDM_EVENT_TYPE = "commerce.productListAdds";
 
 /** Sends an event to aep with an addToCart payload */
-const aepHandler = async (event: Event): Promise<void> => {
+const aepHandler = async (event: Event, context: any): Promise<void> => {
     const { changedProductsContext, shoppingCartContext, debugContext, customContext, storefrontInstanceContext } =
-        event.eventInfo;
+        context || event.eventInfo || window.adobeDataLayer.getState();
 
     let payload: BeaconSchema = {};
     if (customContext && Object.keys(customContext as BeaconSchema).length !== 0) {

@@ -3,11 +3,15 @@ import { SelfDescribingJson, trackStructEvent } from "@snowplow/browser-tracker"
 import { createProductFromCartItem } from "../../utils/product";
 import { createProductCtx, createShoppingCartCtx } from "../../contexts";
 
-const handler = (event: Event): void => {
-    const { changedProductsContext, pageContext, productContext, shoppingCartContext } = event.eventInfo;
+const handler = (event: Event, context: any): void => {
+    // Context is only available in ACDL2,
+    // With MSE, use event.eventInfo
+    // With ACDL1 only, fallback to getState
+    const { changedProductsContext, pageContext, productContext, shoppingCartContext } =
+        context || event.eventInfo || window.adobeDataLayer.getState();
 
     const cartItems = changedProductsContext?.items || shoppingCartContext?.items || [];
-    cartItems?.forEach((item) => {
+    cartItems?.forEach((item: any) => {
         let productCtx;
         if (item.product.sku === productContext.sku) {
             productCtx = createProductCtx(productContext);
@@ -16,17 +20,17 @@ const handler = (event: Event): void => {
         }
         const shoppingCartCtx = createShoppingCartCtx(shoppingCartContext);
 
-        const context: Array<SelfDescribingJson> = [productCtx];
+        const eventContext: Array<SelfDescribingJson> = [productCtx];
 
         if (shoppingCartCtx) {
-            context.push(shoppingCartCtx);
+            eventContext.push(shoppingCartCtx);
         }
 
         trackStructEvent({
             category: "product",
             action: "add-to-cart",
             property: pageContext?.pageType,
-            context,
+            context: eventContext,
         });
     });
 };

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-console */
 import { createInstance } from "@adobe/alloy";
-import { configure, hasConfig, setConsent, setExistingAlloy } from "./alloy";
+import { configure, setConsent, setExistingAlloy } from "./alloy";
 import { subscribeToEvents } from "./events";
 import { configureSnowplow } from "./snowplow";
 
@@ -30,18 +30,17 @@ const addCustomNameToAlloyNamespace = (customName: string) =>
         });
     })(window, [customName]);
 
-/** initialize alloy if magentoStorefrontEvents exists and aep contenxt set up right */
-const initializeAlloy = async () => {
+/** initialize alloy if aep context set up right */
+const initializeAlloy = async (aepContext: any) => {
     try {
-        const sdk = window.magentoStorefrontEvents;
-        const customName = sdk.context.getAEP().webSdkName;
+        const { webSdkName, datastreamId, imsOrgId } = aepContext;
 
         // if a client has provided a webSdkName, we assume that they have another alloy instance
-        if (customName) {
+        if (webSdkName) {
             // the launch script injected into the page already configures alloy
-            setExistingAlloy(customName);
+            setExistingAlloy(webSdkName);
         } else {
-            if (!hasConfig()) {
+            if (!datastreamId || !imsOrgId) {
                 return;
             }
 
@@ -71,11 +70,12 @@ const initializeAlloy = async () => {
 };
 
 const initialize = async () => {
-    const { context } = window.magentoStorefrontEvents;
-    const eventForwarding = context.getEventForwarding();
+    const context = window.adobeDataLayer.getState();
+    const { commerce, aep } = context?.eventForwardingContext;
+    const { datastreamId, imsOrgId } = context?.aepContext;
 
-    const sendToSnowplow = eventForwarding?.commerce === false ? false : true;
-    const sendToAEP = eventForwarding?.aep && hasConfig() ? true : false;
+    const sendToSnowplow = commerce === false ? false : true;
+    const sendToAEP = aep && datastreamId && imsOrgId ? true : false;
 
     if (sendToSnowplow) {
         configureSnowplow({
@@ -86,40 +86,16 @@ const initialize = async () => {
     }
 
     if (sendToAEP) {
-        await initializeAlloy();
+        await initializeAlloy(context?.aepContext);
     }
 
     subscribeToEvents(sendToSnowplow, sendToAEP);
 };
 
-/**
- * handleMessage will only run if we recieve a `magento-storefront-events-sdk`
- * message and if the `magentoStorefrontEvents` exists on the window. this
- * allows the collector to be loaded before the sdk and we can then initialize
- * our collectors
- */
-const handleMessage = (event: MessageEvent) => {
-    // skip other messages
-    if (event.data !== "magento-storefront-events-sdk") {
-        return;
-    }
-
-    // do nothing if sdk is still not available
-    if (!window.magentoStorefrontEvents) {
-        return;
-    }
-
-    initialize();
-
-    // clean up listener
-    window.removeEventListener("message", initialize);
-};
-
-if (window.magentoStorefrontEvents) {
-    initialize();
-} else {
-    window.addEventListener("message", handleMessage, false);
-}
+window.adobeDataLayer.push((dl: any) => {
+    dl.addEventListener("adobeDataLayer:change", initialize, { path: "eventForwardingContext" });
+    dl.addEventListener("adobeDataLayer:change", initialize, { path: "aepContext" });
+});
 
 export * from "./events";
 export * from "./snowplow";

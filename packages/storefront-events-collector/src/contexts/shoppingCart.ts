@@ -4,8 +4,7 @@ import schemas from "../schemas";
 import { ShoppingCartContext, ShoppingCartItem } from "../types/contexts";
 
 const createShoppingCartItems = (shoppingCart?: ShoppingCart) => {
-    const mse = window.magentoStorefrontEvents;
-    const shoppingCartCtx = shoppingCart ?? mse.context.getShoppingCart();
+    const shoppingCartCtx: ShoppingCart = shoppingCart ?? window.adobeDataLayer.getState("shoppingCartContext");
 
     if (!shoppingCartCtx.items) {
         return [];
@@ -26,7 +25,7 @@ const createShoppingCartItems = (shoppingCart?: ShoppingCart) => {
 
 const createContext = (shoppingCart?: ShoppingCart): ShoppingCartContext | null => {
     const mse = window.magentoStorefrontEvents;
-    const shoppingCartCtx = shoppingCart ?? mse.context.getShoppingCart();
+    const shoppingCartCtx = shoppingCart ?? window.adobeDataLayer.getState("shoppingCartContext");
 
     if (!shoppingCartCtx) {
         return {

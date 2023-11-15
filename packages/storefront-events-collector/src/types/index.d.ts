@@ -9,6 +9,7 @@ declare global {
     interface Window {
         __alloyNS: string[];
         magentoStorefrontEvents: MagentoStorefrontEvents;
+        adobeDataLayer: any;
         alloy: AlloyInstance;
     }
 }

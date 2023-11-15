@@ -3,16 +3,28 @@
     <head>
         <link rel="stylesheet" href="style.css" />
 
-        <!-- sdk -->
-        <script src="http://localhost:8080/index.js"></script>
+        <script type="module">
+            window.adobeDataLayer = window.adobeDataLayer || [];
+            window.acdlIndex = (parseInt(window.sessionStorage.acdlIndex, 10) || 0) + 1;
+            !window.acdlDisableStorage && window.sessionStorage.setItem('acdlIndex', window.acdlIndex);
+            window.adobeDataLayer.push = function (...args) {
+                Array.prototype.push.apply(window.adobeDataLayer, args);
+                if (window.acdlDisableStorage) return;
+                const array = JSON.parse(window.sessionStorage.getItem(`acdl:${window.acdlIndex}`)) || [];
+                array.push(...args.filter(a => typeof a !== 'function'));
+                window.sessionStorage.setItem(`acdl:${window.acdlIndex}`, JSON.stringify(array));
+            }
+            console.debug('ACDL initialized', window.adobeDataLayer);
+        </script>
 
         <!-- local -->
-        <script src="/index.js"></script>
+        <script src="/index.js" type="module"></script>
 
         <!-- collector -->
-        <script src="http://localhost:8081/index.js"></script>
+        <script src="http://localhost:8081/index.js" defer></script>
 
-
+        <!-- ACDL2 -->
+        <script src="http://localhost:3000/src/main.js" type="module" crossorigin></script>
     </head>
 
     <body>
@@ -20,7 +32,7 @@
             <h3>Page</h3>
             <div class="event-group">
 
-            <button onclick="magentoStorefrontEvents.publish.pageView()">
+            <button onclick="window.adobeDataLayer.push({ event: 'page-view' })">
                 pageView
             </button>
             </div>
@@ -31,7 +43,7 @@
                     productPageView
                 </button>
     
-                <button onclick="magentoStorefrontEvents.publish.addToCart()">
+                <button onclick="window.adobeDataLayer.push({ event: 'add-to-cart' })">
                     addToCart
                 </button>
             </div>

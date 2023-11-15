@@ -5,8 +5,7 @@ import { ProductContext } from "../types/contexts";
 import { createPricing } from "../utils/product";
 
 const createContext = (product?: Product): ProductContext => {
-    const mse = window.magentoStorefrontEvents;
-    const productCtx = product ?? mse.context.getProduct();
+    const productCtx = product ?? window.adobeDataLayer.getState("productContext");
 
     if (!productCtx) {
         return {
@@ -29,7 +28,7 @@ const createContext = (product?: Product): ProductContext => {
             updatedAt: productCtx.updatedAt,
             manufacturer: productCtx.manufacturer,
             countryOfManufacture: productCtx.countryOfManufacture,
-            categories: productCtx.categories?.map((category) => category.toString()),
+            categories: productCtx.categories?.map((category: any) => category.toString()),
             productType: productCtx.productType,
             pricing: createPricing(productCtx),
             canonicalUrl: productCtx.canonicalUrl,

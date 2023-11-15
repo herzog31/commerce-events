@@ -1,12 +1,15 @@
 import * as handlers from "./handlers";
 
 const subscribeToEvents = (sendToSnowplow: boolean, sendToAEP: boolean): void => {
-    const mse = window.magentoStorefrontEvents;
-
+    // TODO: Make sure to only call once
+    console.log("subscribeToEvents");
     // Snowplow events
     if (sendToSnowplow) {
         try {
-            mse.subscribe.addToCart(handlers.addToCartHandler);
+            window.adobeDataLayer.push((dl: any) => {
+                dl.addEventListener("add-to-cart", handlers.addToCartHandler);
+            });
+            /* mse.subscribe.addToCart(handlers.addToCartHandler);
             mse.subscribe.initiateCheckout(handlers.initiateCheckoutHandler);
             mse.subscribe.pageView(handlers.pageViewHandler);
             mse.subscribe.placeOrder(handlers.placeOrderHandler);
@@ -24,7 +27,7 @@ const subscribeToEvents = (sendToSnowplow: boolean, sendToAEP: boolean): void =>
             mse.subscribe.searchResultsView(handlers.searchResultsViewHandler);
             mse.subscribe.categoryResultsView(handlers.categoryResultsViewHandler);
             mse.subscribe.searchSuggestionClick(handlers.searchSuggestionClickHandler);
-            mse.subscribe.shoppingCartView(handlers.shoppingCartViewHandler);
+            mse.subscribe.shoppingCartView(handlers.shoppingCartViewHandler); */
         } catch (e) {
             console.error(`error subscribing to Commerce events: ${JSON.stringify(e)}`);
         }
@@ -33,7 +36,11 @@ const subscribeToEvents = (sendToSnowplow: boolean, sendToAEP: boolean): void =>
     // AEP events
     if (sendToAEP) {
         try {
-            mse.subscribe.addToCart(handlers.addToCartHandlerAEP);
+            window.adobeDataLayer.push((dl: any) => {
+                dl.addEventListener("add-to-cart", handlers.addToCartHandlerAEP);
+            });
+            // TODO add to cart
+            /* mse.subscribe.addToCart(handlers.addToCartHandlerAEP);
             mse.subscribe.addToRequisitionList(handlers.addToRequisitionListHandlerAEP);
             mse.subscribe.custom(handlers.customHandlerAEP);
             mse.subscribe.createAccount(handlers.createAccountHandlerAEP);
@@ -50,7 +57,7 @@ const subscribeToEvents = (sendToSnowplow: boolean, sendToAEP: boolean): void =>
             mse.subscribe.searchResponseReceived(handlers.searchResponseReceivedHandlerAEP);
             mse.subscribe.shoppingCartView(handlers.shoppingCartViewHandlerAEP);
             mse.subscribe.signIn(handlers.signInHandlerAEP);
-            mse.subscribe.signOut(handlers.signOutHandlerAEP);
+            mse.subscribe.signOut(handlers.signOutHandlerAEP); */
         } catch (e) {
             console.error(`error subscribing to Experience events: ${JSON.stringify(e)}`);
         }
@@ -58,12 +65,15 @@ const subscribeToEvents = (sendToSnowplow: boolean, sendToAEP: boolean): void =>
 };
 
 const unsubscribeFromEvents = (sendToSnowplow: boolean, sendToAEP: boolean): void => {
-    const mse = window.magentoStorefrontEvents;
+    // const mse = window.magentoStorefrontEvents;
 
     // Snowplow events
     if (sendToSnowplow) {
         try {
-            mse.unsubscribe.addToCart(handlers.addToCartHandler);
+            window.adobeDataLayer.push((dl: any) => {
+                dl.removeEventListener("add-to-cart", handlers.addToCartHandler);
+            });
+            /* mse.unsubscribe.addToCart(handlers.addToCartHandler);
             mse.unsubscribe.initiateCheckout(handlers.initiateCheckoutHandler);
             mse.unsubscribe.pageView(handlers.pageViewHandler);
             mse.unsubscribe.placeOrder(handlers.placeOrderHandler);
@@ -82,7 +92,7 @@ const unsubscribeFromEvents = (sendToSnowplow: boolean, sendToAEP: boolean): voi
             mse.unsubscribe.categoryResultsView(handlers.categoryResultsViewHandler);
             mse.unsubscribe.searchSuggestionClick(handlers.searchSuggestionClickHandler);
             mse.unsubscribe.shoppingCartView(handlers.shoppingCartViewHandler);
-            mse.unsubscribe.shoppingCartView(handlers.shoppingCartViewHandler);
+            mse.unsubscribe.shoppingCartView(handlers.shoppingCartViewHandler); */
         } catch (e) {
             console.error(`error unsubscribing from Commerce events: ${JSON.stringify(e)}`);
         }
@@ -91,7 +101,10 @@ const unsubscribeFromEvents = (sendToSnowplow: boolean, sendToAEP: boolean): voi
     // AEP events
     if (sendToAEP) {
         try {
-            mse.unsubscribe.addToCart(handlers.addToCartHandlerAEP);
+            window.adobeDataLayer.push((dl: any) => {
+                dl.removeEventListener("add-to-cart", handlers.addToCartHandlerAEP);
+            });
+            /* mse.unsubscribe.addToCart(handlers.addToCartHandlerAEP);
             mse.unsubscribe.addToRequisitionList(handlers.addToRequisitionListHandlerAEP);
             mse.unsubscribe.createAccount(handlers.createAccountHandlerAEP);
             mse.unsubscribe.createRequisitionList(handlers.createRequisitionListHandlerAEP);
@@ -108,7 +121,7 @@ const unsubscribeFromEvents = (sendToSnowplow: boolean, sendToAEP: boolean): voi
             mse.unsubscribe.searchResponseReceived(handlers.searchResponseReceivedHandlerAEP);
             mse.unsubscribe.shoppingCartView(handlers.shoppingCartViewHandlerAEP);
             mse.unsubscribe.signIn(handlers.signInHandlerAEP);
-            mse.unsubscribe.signOut(handlers.signOutHandlerAEP);
+            mse.unsubscribe.signOut(handlers.signOutHandlerAEP); */
         } catch (e) {
             console.error(`error unsubscribing from Experience events: ${JSON.stringify(e)}`);
         }
